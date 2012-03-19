@@ -6,7 +6,7 @@ package
 	{
 		public function BusyMan()
 		{
-			
+			trace("Hello World!");
 		}
 	}
 }
