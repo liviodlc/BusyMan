@@ -1,0 +1,24 @@
+WORD OF CAUTION:
+
+	This project is currently in a phase of rapid prototypes, so the code
+	may not be very well documented. If you want to read the code, check
+	out the UML diagrams in the /uml/ folder.
+
+
+CURRENT STATE:
+
+	Unplayable! Next playable prototype due Wednesday, March 21, 2012.
+
+
+HOW TO PLAY THE GAME:
+
+	Download the swf file in /bin-debug/BusyMan.swf
+
+
+CREDITS:
+
+	Game Design and Programming
+		Livio De La Cruz
+	
+	Production and Advice
+		Jacob Stevens
