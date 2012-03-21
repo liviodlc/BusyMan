@@ -36,7 +36,7 @@ package com.rivermanmedia {
 		private var newY:Number;
 		private var floor:Number;
 		private var isOnFloor:Boolean = false;
-		
+
 		public var health:Number = 100;
 		public var power:Number = 100;
 
@@ -72,6 +72,26 @@ package com.rivermanmedia {
 		}
 
 
+		private function startGrapple():void {
+			if (!grappleEnded && !grapple.visible) {
+				grapple.visible = true;
+				grapplePath = new Sprite();
+				with (grapplePath.graphics) {
+					lineStyle();
+					if (isSuperSpace)
+						beginFill(GRAPPLE_SUPER_COLOR);
+					else
+						beginFill(GRAPPLE_COLOR);
+					drawRect(0, 0, PLAYER_WIDTH / 2, 1);
+					endFill();
+				}
+				grapplePath.x = PLAYER_WIDTH / 4;
+				grapplePath.y = 10;
+				addChildAt(grapplePath, 0);
+			}
+		}
+
+
 		private function onKeyDown(evt:KeyboardEvent):void {
 			switch (evt.keyCode) {
 				case 37: // Left Arrow Key
@@ -82,32 +102,24 @@ package com.rivermanmedia {
 				case 68: // D
 					isKey_Right = true;
 					break;
+//				case 38: // Up Arrow Key
+//				case 87: // W
+//					if (isOnFloor && !isKey_Up && !isKey_Space)
+//						ySpeed = JUMP_SPEED;
+//					isKey_Up = true;
+//					break;
 				case 38: // Up Arrow Key
 				case 87: // W
-					if (isOnFloor && !isKey_Up && !isKey_Space)
-						ySpeed = JUMP_SPEED;
-					isKey_Up = true;
-					break;
-				case 32: // Spacebar
+//				case 32: // Spacebar
 					isKey_Space = true;
-					if (!isOnFloor)
-						isSuperSpace = true;
-					if (!grappleEnded && !grapple.visible) {
-						grapple.visible = true;
-						grapplePath = new Sprite();
-						with (grapplePath.graphics) {
-							lineStyle();
-							if (isSuperSpace)
-								beginFill(GRAPPLE_SUPER_COLOR);
-							else
-								beginFill(GRAPPLE_COLOR);
-							drawRect(0, 0, PLAYER_WIDTH / 2, 1);
-							endFill();
-						}
-						grapplePath.x = PLAYER_WIDTH / 4;
-						grapplePath.y = 10;
-						addChildAt(grapplePath, 0);
-					}
+//					if(!isSuperSpace)
+					startGrapple();
+					break;
+				case 40: // Down Arrow
+				case 83: // S
+					isSuperSpace = true;
+//					if(!isKey_Space)
+					startGrapple();
 					break;
 			}
 		}
@@ -125,10 +137,15 @@ package com.rivermanmedia {
 					break;
 				case 38: // Up Arrow Key
 				case 87: // W
-					isKey_Up = false;
-					break;
-				case 32: // Spacebar
+//					isKey_Up = false;
+//					break;
+//				case 32: // Spacebar
 					isKey_Space = false;
+					endGrapple();
+					grappleEnded = false;
+					break;
+				case 40: // Down Arrow
+				case 83: // S
 					isSuperSpace = false;
 					endGrapple();
 					grappleEnded = false;
@@ -139,7 +156,7 @@ package com.rivermanmedia {
 
 		private function endGrapple():void {
 			grappleEnded = true;
-			focusedOn=null;
+			focusedOn = null;
 			if (grapple.visible) {
 				grapple.visible = false;
 				grapple.y = 0;
@@ -151,7 +168,7 @@ package com.rivermanmedia {
 
 
 		public function get grapplePoint():Point {
-			if (focusedOn==null && grapple.visible)
+			if (focusedOn == null && grapple.visible)
 				return new Point(grapple.x + this.x, grapple.y + this.y);
 			else
 				return null;
@@ -171,7 +188,7 @@ package com.rivermanmedia {
 		private function updateMovement():void {
 			var hasMoved:Boolean = false;
 			isOnFloor = false;
-			
+
 			// move right
 			if (isKey_Right && (!isKey_Space || focusedOn != null)) {
 				xSpeed += RUN_ACC;
@@ -221,8 +238,8 @@ package com.rivermanmedia {
 			} else if (newX < 0) {
 				newX = 0;
 			}
-			
-			if(focusedOn!=null){
+
+			if (focusedOn != null) {
 				focusedOn.x += newX - x;
 				focusedOn.y += newY - y;
 			}
@@ -230,7 +247,7 @@ package com.rivermanmedia {
 
 
 		private function updateGrapple():void {
-			if (focusedOn==null && grapple.visible) {
+			if (focusedOn == null && grapple.visible) {
 				var theSpeed:uint;
 				if (isSuperSpace)
 					theSpeed = GRAPPLE_SUPER_SPEED;
@@ -243,9 +260,9 @@ package com.rivermanmedia {
 					endGrapple();
 				}
 			}
-			if(focusedOn!=null && !focusedOn.finished){
+			if (focusedOn != null && !focusedOn.finished) {
 				focusedOn.focus(isSuperSpace, new Point(grapple.x + this.x - focusedOn.x, grapple.y + this.y - focusedOn.y));
-				if(isSuperSpace)
+				if (isSuperSpace)
 					health--;
 			}
 		}

@@ -11,7 +11,7 @@ package com.rivermanmedia {
 
 	public class BusyMan extends Sprite {
 
-		[Embed(source = "images/titlescreen_2.1.png")]
+		[Embed(source = "images/titlescreen_2.2.png")]
 		private var TitleScreen:Class;
 
 		private var title:Bitmap;
