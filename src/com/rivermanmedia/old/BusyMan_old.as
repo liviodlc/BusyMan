@@ -1,4 +1,4 @@
-package com.rivermanmedia {
+package com.rivermanmedia.old {
 	import flash.display.Bitmap;
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
@@ -9,7 +9,7 @@ package com.rivermanmedia {
 
 	[SWF(width = "500", height = "375", frameRate = "30", backgroundColor = "#000000")]
 
-	public class BusyMan extends Sprite {
+	public class BusyMan_old extends Sprite {
 
 		[Embed(source = "images/titlescreen_2.2.png")]
 		private var TitleScreen:Class;
@@ -18,10 +18,10 @@ package com.rivermanmedia {
 		private var healthBar:Sprite;
 
 		private var tasks:Array;
-		private var player:Player;
+		private var player:Player_old;
 
 
-		public function BusyMan() {
+		public function BusyMan_old() {
 			graphics.beginFill(0xFFFFFF);
 			graphics.drawRect(0, 0, 500, 375);
 			graphics.endFill();
@@ -43,7 +43,7 @@ package com.rivermanmedia {
 
 
 		private function initGame():void {
-			player = new Player(stage);
+			player = new Player_old(stage);
 			addChild(player);
 			tasks = [];
 		}
@@ -71,7 +71,7 @@ package com.rivermanmedia {
 			var coll:Boolean = false;
 			player.onGameLoop();
 			p = player.grapplePoint;
-			for each (var t:Task in tasks) {
+			for each (var t:Task_old in tasks) {
 				if (t.isDue) {
 					if (t.alpha <= 0.1) {
 						removeChild(t);
@@ -106,7 +106,7 @@ package com.rivermanmedia {
 			// erase forgotten grapple paths
 			for (var i:uint = 0; i < numChildren; i++) {
 				var o:DisplayObject = getChildAt(i);
-				if (o != player && o != title && !(o is Task) && o != healthBar) {
+				if (o != player && o != title && !(o is Task_old) && o != healthBar) {
 					o.alpha -= 0.05;
 					if (o.alpha <= 0) {
 						removeChild(o);
@@ -130,7 +130,7 @@ package com.rivermanmedia {
 			// spawn new tasks
 			if (spawnTimer == 0) {
 				spawnTimer = Math.random() * MAX_SPAWN_TIME + MAX_SPAWN_TIME;
-				var newTask:Task = new Task((Math.random() >= 0.4));
+				var newTask:Task_old = new Task_old((Math.random() >= 0.4));
 				newTask.x = Math.random() * 500;
 				newTask.y = -100;
 				tasks.push(newTask);
@@ -139,7 +139,7 @@ package com.rivermanmedia {
 			spawnTimer--;
 		}
 		private static const MIN_SPAWN_TIME:uint = 10;
-		private static const MAX_SPAWN_TIME:uint = 50 - MIN_SPAWN_TIME;
+		private static const MAX_SPAWN_TIME:uint = 30 - MIN_SPAWN_TIME;
 		private var spawnTimer:uint = 0;
 	}
 }

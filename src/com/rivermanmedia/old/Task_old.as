@@ -1,15 +1,15 @@
-package com.rivermanmedia {
+package com.rivermanmedia.old {
 
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 
-	public class Task extends Sprite {
+	public class Task_old extends Sprite {
 
 		private static const MIN_SIZE:uint = 10;
-		private static const MAX_SIZE:uint = 60;
-		private static const MIN_DUE:uint = 90;
-		private static const MAX_DUE:uint = 210 - MIN_DUE;
+		private static const MAX_SIZE:uint = 30;
+		private static const MIN_DUE:uint = 200;
+		private static const MAX_DUE:uint = 500 - MIN_DUE;
 
 		private static const WORK_FILL_COLOR:uint = 0x254eff;
 		private static const PLAY_FILL_COLOR:uint = 0x00CC00;
@@ -27,7 +27,7 @@ package com.rivermanmedia {
 		public var isWork:Boolean;
 
 
-		public function Task(work:Boolean, due:Number = 0, size:uint = 0) {
+		public function Task_old(work:Boolean, due:Number = 0, size:uint = 0) {
 			isWork = work;
 			if (size == 0)
 				size = Math.random() * MAX_SIZE + MIN_SIZE;
