@@ -63,7 +63,7 @@ package com.rivermanmedia {
 			prototext.autoSize = TextFieldAutoSize.CENTER;
 			prototext.x = STAGE_WIDTH / 2;
 			prototext.y = 120;
-			prototext.text = "Prototype #3.0 - March 27, 2012";
+			prototext.text = "Prototype #4.0 - April 4, 2012";
 			prototext.selectable = false;
 			title.addChild(prototext);
 
@@ -89,7 +89,7 @@ package com.rivermanmedia {
 			featuretext.width = STAGE_WIDTH - 20;
 			featuretext.y = STAGE_HEIGHT / 2 + 50;
 			featuretext.height = STAGE_HEIGHT - featuretext.y - 10;
-			featuretext.htmlText = "<b>Features:</b>\nPlayer movements are much more discrete, precise, and efficient.\n\n<b>Controls:</b>\nArrow keys to move left/right.\nUp Arrow Key to shoot normally.\nDown Arrow Key for super shot.";
+			featuretext.htmlText = "<b>Controls:</b>\nArrow keys to move left/right.\nUp Arrow Key to shoot normally.\nSpacebar to create a task.\n\n<b>Features:</b>\nTesting the new tasks system and basic aesthetic of tasks.";
 			featuretext.selectable = false;
 			title.addChild(featuretext);
 

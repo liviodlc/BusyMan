@@ -34,6 +34,8 @@ package com.rivermanmedia {
 		private var game:GameBoard;
 		private var paths:Array;
 
+		private var curTask:Task;
+
 
 		public function Player(theStage:Stage, game:GameBoard) {
 			this.game = game;
@@ -54,18 +56,18 @@ package com.rivermanmedia {
 			addChildAt(glow, 0);
 
 			paths = new Array(GameBoard.NUM_COLUMNS);
-			for(var i:uint = 0; i < GameBoard.NUM_COLUMNS; i++){
+			for (var i:uint = 0; i < GameBoard.NUM_COLUMNS; i++) {
 				var path:Sprite = new Sprite();
 				path.graphics.beginFill(PATH_COLOR);
 				path.graphics.drawRect(0, -y, GameBoard.COL_WIDTH, Main.STAGE_HEIGHT);
 				path.graphics.endFill();
 				path.x = i * GameBoard.COL_WIDTH - x;
 				path.alpha = 0;
-				path.visible = false;//optimization
+				path.visible = false; //optimization
 				addChildAt(path, 1);
 				paths[i] = path;
 			}
-			
+
 
 			theStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			theStage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
@@ -90,6 +92,9 @@ package com.rivermanmedia {
 				case 40: // Down Arrow
 				case 83: // S
 					isKey_Down = true;
+					break;
+				case 32: // Spacebar
+					game.addNewTask();
 					break;
 			}
 		}
@@ -127,11 +132,11 @@ package com.rivermanmedia {
 		private function updateControls():void {
 			if (curDelay > 1) {
 				curDelay--;
-				if (isKey_Up && !isFiring) {
-					fireDelay = true;
-				}
+//				if (isKey_Up && !isFiring) {
+//					fireDelay = true;
+//				}
 			} else {
-				if (isKey_Up){
+				if (isKey_Up) {
 					isFiring = true;
 					newPath();
 					xSpeed = 0;
@@ -145,16 +150,21 @@ package com.rivermanmedia {
 				} else {
 					xSpeed = 0;
 				}
-				fireDelay = false;
+				//fireDelay = false;
 				curPath = null;
 			}
 		}
 
 
 		private function newPath():void {
-			var p:Sprite = paths[uint((x + PLAYER_WIDTH) / GameBoard.COL_WIDTH)];
+			var i:uint = uint((x + PLAYER_WIDTH) / GameBoard.COL_WIDTH);
+			var p:Sprite = paths[i];
 			p.alpha = 1;
 			p.visible = true;
+
+			curTask = game.getTaskAt(i);
+			if (curTask)
+				curTask.isHighlighted = true;
 		}
 
 
@@ -165,7 +175,7 @@ package com.rivermanmedia {
 				newX = newX - Main.STAGE_WIDTH;
 			else if (newX < 0)
 				newX = Main.STAGE_WIDTH + newX;
-			
+
 			pathOffset = newX - x;
 
 			x = newX;
@@ -176,9 +186,9 @@ package com.rivermanmedia {
 			var p:Sprite;
 			for each (p in paths) {
 				p.x -= pathOffset;
-				if(p.alpha > 0.07){
+				if (p.alpha > 0.07) {
 					p.alpha -= 0.07;
-				}else{
+				} else {
 					p.visible = false;
 				}
 			}
