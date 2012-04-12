@@ -20,7 +20,7 @@ package com.rivermanmedia {
 		private function initColumns():void {
 			columns = new Array(NUM_COLUMNS);
 
-			graphics.lineStyle(1, 0x999999);
+			graphics.lineStyle(1, 0x999999, 0.5);
 			for (var i:uint = 1; i < NUM_COLUMNS; i++) {
 				var rightX:uint = i * COL_WIDTH;
 				graphics.moveTo(rightX, 0);
@@ -46,6 +46,8 @@ package com.rivermanmedia {
 		public function addNewTask():void {
 			var t:Task = new Task(Task.getRandomSize(), Task.getRandomSpeed());
 			var i:uint = getRandomColumn();
+			if (t.width > COL_WIDTH && i == NUM_COLUMNS - 1)
+				i--;
 			t.x = i * COL_WIDTH;
 			(columns[i] as LinkedList).add(t);
 			addChild(t);
@@ -60,19 +62,21 @@ package com.rivermanmedia {
 		private function updateAllTasks():void {
 			for each (var list:LinkedList in columns) {
 				var toRemove:LinkedList = new LinkedList();
-				
+
 				list.beginIteration();
 				while (list.hasNext()) {
 					var t:Task = (list.next as Task);
+					var test_y:Number = t.y;
 					t.onGameLoop();
-					if(!t.visible || t.y > Main.STAGE_HEIGHT){
+					if (!t.visible || t.y > Main.STAGE_HEIGHT) {
 						toRemove.add(t);
-						removeChild(t);
+						if (contains(t))
+							removeChild(t);
 					}
 				}
-				
+
 				toRemove.beginIteration();
-				while(toRemove.hasNext()){
+				while (toRemove.hasNext()) {
 					list.remove(toRemove.next);
 				}
 			}
@@ -82,11 +86,23 @@ package com.rivermanmedia {
 		public function getTaskAt(i:uint):Task {
 			var list:LinkedList = (columns[i] as LinkedList);
 			var t:Task = null;
+			var task:Task;
 			list.beginIteration();
 			while (list.hasNext()) {
-				var task:Task = list.next as Task;
+				task = list.next as Task;
 				if (t == null || t.y < task.y)
 					t = task;
+			}
+
+			//check for bigger tasks
+			if (i > 0) {
+				list = (columns[i - 1] as LinkedList);
+				list.beginIteration();
+				while (list.hasNext()) {
+					task = list.next as Task;
+					if (task != null && (t == null || task.y > t.y) && task.width > COL_WIDTH)
+						t = task;
+				}
 			}
 			return t;
 		}

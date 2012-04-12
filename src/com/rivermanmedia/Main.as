@@ -1,8 +1,12 @@
 package com.rivermanmedia {
 
+	import flash.display.DisplayObject;
+	import flash.display.Loader;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.net.URLRequest;
+	import flash.system.Security;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
@@ -25,17 +29,55 @@ package com.rivermanmedia {
 		public function Main() {
 			drawTitle();
 			initGame();
+			initVideo();
+		}
+
+		//YouTube stuff:
+		private var _loader:Loader;
+		private var _player:Object;
+
+
+		private function initVideo():void {
+			Security.allowDomain("s.ytimg.com");
+			Security.allowDomain("www.youtube.com");
+			_loader = new Loader();
+			_loader.contentLoaderInfo.addEventListener(Event.INIT, _onLoaderInit, false, 0, true);
+			_loader.load(new URLRequest("http://www.youtube.com/apiplayer?version=3"));
+		}
+
+
+		private function _onLoaderInit(event:Event):void {
+			_player = _loader.content;
+			_player.addEventListener("onReady", _onPlayerReady, false, 0, true);
+			addChildAt(DisplayObject(_player), 0);
+
+			_loader.contentLoaderInfo.removeEventListener(Event.INIT, _onLoaderInit);
+			_loader = null;
+		}
+
+
+		private function _onPlayerReady(event:Event):void {
+			_player.removeEventListener("onReady", _onPlayerReady);
+			// Once this event has been dispatched by the player, we can use
+			// cueVideoById, loadVideoById, cueVideoByUrl and loadVideoByUrl
+			// to load a particular YouTube video.  
+			_player.setSize(STAGE_WIDTH, STAGE_HEIGHT);
+			_player.loadVideoById("6BH49F_VVfw");
+			_player.mute();
+			_player.setLoop(true);
 		}
 
 
 		private function drawTitle():void {
+			// white bg
+			var bg:Sprite = new Sprite();
+			bg.graphics.beginFill(0xFFFFFF, 0.25);
+			bg.graphics.drawRect(0, 0, STAGE_WIDTH, STAGE_HEIGHT);
+			bg.graphics.endFill();
+			//addChild(bg);
+			
 			title = new Sprite();
 
-			// white bg
-			graphics.beginFill(0xFFFFFF);
-			graphics.drawRect(0, 0, STAGE_WIDTH, STAGE_HEIGHT);
-			graphics.endFill();
-			
 			// white bg for clicking purposes
 			var canvas:Sprite = new Sprite();
 			canvas.graphics.beginFill(0xFFFFFF);
@@ -63,7 +105,7 @@ package com.rivermanmedia {
 			prototext.autoSize = TextFieldAutoSize.CENTER;
 			prototext.x = STAGE_WIDTH / 2;
 			prototext.y = 120;
-			prototext.text = "Prototype #4.0 - April 4, 2012";
+			prototext.text = "Prototype #5.2 - April 12, 2012";
 			prototext.selectable = false;
 			title.addChild(prototext);
 
@@ -87,33 +129,36 @@ package com.rivermanmedia {
 			featuretext.wordWrap = true;
 			featuretext.x = 10;
 			featuretext.width = STAGE_WIDTH - 20;
-			featuretext.y = STAGE_HEIGHT / 2 + 50;
-			featuretext.height = STAGE_HEIGHT - featuretext.y - 10;
-			featuretext.htmlText = "<b>Controls:</b>\nArrow keys to move left/right.\nUp Arrow Key to shoot normally.\nSpacebar to create a task.\n\n<b>Features:</b>\nTesting the new tasks system and basic aesthetic of tasks.";
+			featuretext.y = STAGE_HEIGHT / 2 + 40;
+			featuretext.height = STAGE_HEIGHT - featuretext.y + 100;
+			featuretext.htmlText = "<b>Controls:</b>\nArrow keys to move left/right.\nUp Arrow Key to shoot normally.\nSpacebar to create a task.\n\n<b>Features:</b>\nSlower task speed, multi-columned tasks, YouTube video backgrounds, task entrance animation.";
 			featuretext.selectable = false;
 			title.addChild(featuretext);
 
 			addChild(title);
-			stage.addEventListener(MouseEvent.CLICK, onTitleClick, true, 0, true);
+			stage.addEventListener(MouseEvent.CLICK, onTitleClick);
 		}
-		
-		private function onTitleClick(evt:MouseEvent):void{
+
+
+		private function onTitleClick(evt:MouseEvent):void {
 			removeChild(title);
 			stage.removeEventListener(MouseEvent.CLICK, onTitleClick);
-			
+
 			stage.addEventListener(Event.ENTER_FRAME, onGameLoop, false, 0, true);
 			stage.focus = stage;
 		}
-		
-		private function initGame():void{
+
+
+		private function initGame():void {
 			game = new GameBoard();
 			addChildAt(game, 0);
-			
+
 			player = new Player(stage, game);
 			addChildAt(player, 0);
 		}
-		
-		private function onGameLoop(evt:Event):void{
+
+
+		private function onGameLoop(evt:Event):void {
 			player.onGameLoop();
 			game.onGameLoop();
 		}

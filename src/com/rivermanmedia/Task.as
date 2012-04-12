@@ -13,8 +13,8 @@ package com.rivermanmedia {
 		private static const BLOCK_SIZE:uint = GameBoard.COL_WIDTH / 3 - OFFSET;
 
 		private static const RUMBLE_MAX:Number = 5;
-		private static const HIGHLIGHT_DELAY:uint = 10;
-		private static const MAX_RANDOM_SIZE:uint = 6;
+		private static const HIGHLIGHT_DELAY:uint = 5;
+		private static const MAX_RANDOM_SIZE:uint = 12;
 		private static const MAX_RANDOM_SPEED:Number = 0.5;
 
 
@@ -24,7 +24,7 @@ package com.rivermanmedia {
 
 
 		public static function getRandomSpeed():Number {
-			return Math.random() * MAX_RANDOM_SPEED + 1;
+			return Math.random() * MAX_RANDOM_SPEED + 0.1;
 		}
 
 		private var isWork:Boolean;
@@ -50,10 +50,19 @@ package com.rivermanmedia {
 			this.isWork = isWork;
 			this.speed = speed;
 
+			var mywidth:uint;
 			this.size = size = size * 3;
+			if (size >= 12) {
+				mywidth = 2;
+				if (size % 6 != 0)
+					this.size = size = size + 3;
+			} else {
+				mywidth = 1;
+			}
 			blocks = new Array(size);
 			var bx:Number = 0;
-			var by:Number = 0;
+			var by:Number = -BLOCK_SIZE;
+			var j:uint = 0;
 			for (var i:uint = 0; i < size; i++) {
 				var bl:Sprite = new Sprite();
 				with (bl.graphics) {
@@ -62,21 +71,26 @@ package com.rivermanmedia {
 					drawRect(0, 0, BLOCK_SIZE, BLOCK_SIZE);
 					endFill();
 				}
-				if (i % 3 == 0) {
-					bx = LEFT_BLOCK + BLOCK_SIZE; //center
+				//TODO make this code general enough to work with width
+				//add a variable to keep track of width
+				if (j >= (3 * mywidth)) {
 					by -= BLOCK_SIZE;
-				} else if (i % 3 == 1) {
+					j = 0;
+				}
+				bx = (LEFT_BLOCK * mywidth) + (BLOCK_SIZE * j);
+				j++;
+				/* else if (i % 3 == 1) {
 					bx = LEFT_BLOCK; //left
 				} else {
 					bx = LEFT_BLOCK + (BLOCK_SIZE << 1); //right
-				}
+				}*/
 				bl.x = bx;
 				bl.y = by;
 				addChild(bl);
 				blocks[i] = bl;
 			}
 			graphics.beginFill(BG_COLOR);
-			graphics.drawRect(LEFT_BLOCK / 2, -height - LEFT_BLOCK / 2, width + LEFT_BLOCK, height + LEFT_BLOCK);
+			graphics.drawRect((LEFT_BLOCK * mywidth) / 2, -height - LEFT_BLOCK / 2, width + (LEFT_BLOCK * mywidth), height + LEFT_BLOCK);
 			graphics.endFill();
 		}
 
@@ -118,8 +132,8 @@ package com.rivermanmedia {
 						b.visible = false;
 						size--;
 					}
-					if(size==0){
-						visible=false;
+					if (size == 0) {
+						visible = false;
 					}
 					workDelay = HIGHLIGHT_DELAY;
 				} else {
@@ -130,7 +144,10 @@ package com.rivermanmedia {
 				dy = 0;
 			}
 
-			ny += speed;
+			if(y - height > 0)
+				ny += speed;
+			else
+				ny += speed * 8;
 			isHighlighted = false;
 
 			x = nx + dx;

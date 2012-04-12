@@ -115,6 +115,7 @@ package org.interguild {
 					traverse.next = traverse.next.next;
 					return;
 				}
+				traverse = traverse.next;
 			}
 		}
 		

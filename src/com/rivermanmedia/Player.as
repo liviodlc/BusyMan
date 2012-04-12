@@ -50,7 +50,7 @@ package com.rivermanmedia {
 			y = Main.STAGE_HEIGHT - PLAYER_HEIGHT;
 
 			glow = new Sprite();
-			glow.graphics.beginFill(GLOW_COLOR); // light gray
+			glow.graphics.beginFill(GLOW_COLOR, 0.25); // light gray
 			glow.graphics.drawRect(-(GameBoard.COL_WIDTH - PLAYER_WIDTH) / 2, -y, GameBoard.COL_WIDTH, Main.STAGE_HEIGHT);
 			glow.graphics.endFill();
 			addChildAt(glow, 0);
@@ -58,7 +58,7 @@ package com.rivermanmedia {
 			paths = new Array(GameBoard.NUM_COLUMNS);
 			for (var i:uint = 0; i < GameBoard.NUM_COLUMNS; i++) {
 				var path:Sprite = new Sprite();
-				path.graphics.beginFill(PATH_COLOR);
+				path.graphics.beginFill(PATH_COLOR, 0.25);
 				path.graphics.drawRect(0, -y, GameBoard.COL_WIDTH, Main.STAGE_HEIGHT);
 				path.graphics.endFill();
 				path.x = i * GameBoard.COL_WIDTH - x;
