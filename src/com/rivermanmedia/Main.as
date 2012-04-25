@@ -14,12 +14,12 @@ package com.rivermanmedia {
 	
 	import flashx.textLayout.formats.TextAlign;
 
-	[SWF(width = "540", height = "430", frameRate = "30", backgroundColor = "#000000")]
+	[SWF(width = "400", height = "600", frameRate = "30", backgroundColor = "#000000")]
 
 	public class Main extends Sprite {
 
-		public static const STAGE_WIDTH:uint = 540;
-		public static const STAGE_HEIGHT:uint = 430;
+		public static const STAGE_WIDTH:uint = 400;
+		public static const STAGE_HEIGHT:uint = 600;
 
 		private var title:Sprite;
 		private var player:Player;
@@ -29,7 +29,7 @@ package com.rivermanmedia {
 		public function Main() {
 			drawTitle();
 			initGame();
-			initVideo();
+			//initVideo();
 		}
 
 		//YouTube stuff:
@@ -75,7 +75,7 @@ package com.rivermanmedia {
 			bg.graphics.drawRect(0, 0, STAGE_WIDTH, STAGE_HEIGHT);
 			bg.graphics.endFill();
 			//addChild(bg);
-			
+
 			title = new Sprite();
 
 			// white bg for clicking purposes
@@ -87,12 +87,12 @@ package com.rivermanmedia {
 
 			// "Busy Man" text
 			var titletext:TextField = new TextField();
-			var titleform:TextFormat = new TextFormat("Verdana", "80");
+			var titleform:TextFormat = new TextFormat("Verdana", "70");
 			titleform.align = TextAlign.CENTER;
 			titletext.defaultTextFormat = titleform;
 			titletext.autoSize = TextFieldAutoSize.CENTER;
 			titletext.x = STAGE_WIDTH / 2;
-			titletext.y = 20;
+			titletext.y = 72;
 			titletext.text = "BUSY MAN";
 			titletext.selectable = false;
 			title.addChild(titletext);
@@ -104,8 +104,8 @@ package com.rivermanmedia {
 			prototext.defaultTextFormat = protoform;
 			prototext.autoSize = TextFieldAutoSize.CENTER;
 			prototext.x = STAGE_WIDTH / 2;
-			prototext.y = 120;
-			prototext.text = "Prototype #5.2 - April 12, 2012";
+			prototext.y = 152;
+			prototext.text = "Prototype #6.0 - April 25, 2012";
 			prototext.selectable = false;
 			title.addChild(prototext);
 
@@ -116,23 +116,22 @@ package com.rivermanmedia {
 			clicktext.defaultTextFormat = clickform;
 			clicktext.autoSize = TextFieldAutoSize.CENTER;
 			clicktext.x = STAGE_WIDTH / 2;
-			clicktext.y = STAGE_HEIGHT / 2 - 20;
-			clicktext.text = "Click Anywhere to Begin";
+			clicktext.y = 456;
+			clicktext.text = "Click Anywhere to Begin!";
 			clicktext.selectable = false;
 			title.addChild(clicktext);
 
 			// features text
 			var featuretext:TextField = new TextField();
-			var featureform:TextFormat = new TextFormat("Arial", "18");
-			featureform.align = TextAlign.LEFT;
+			var featureform:TextFormat = new TextFormat("Arial", "22");
+			featureform.align = TextAlign.CENTER;
 			featuretext.defaultTextFormat = featureform;
-			featuretext.wordWrap = true;
-			featuretext.x = 10;
-			featuretext.width = STAGE_WIDTH - 20;
-			featuretext.y = STAGE_HEIGHT / 2 + 40;
-			featuretext.height = STAGE_HEIGHT - featuretext.y + 100;
-			featuretext.htmlText = "<b>Controls:</b>\nArrow keys to move left/right.\nUp Arrow Key to shoot normally.\nSpacebar to create a task.\n\n<b>Features:</b>\nSlower task speed, multi-columned tasks, YouTube video backgrounds, task entrance animation.";
+			featuretext.x = STAGE_WIDTH / 2;
+			featuretext.y = 272;
+			featuretext.autoSize = TextFieldAutoSize.CENTER;
+			featuretext.htmlText = "<b>Controls (Mouse Only):</b>\nLeft-Click = Start Task\nRight-Click = Split Task\nClick-and-Drag = Queue Tasks";
 			featuretext.selectable = false;
+			featuretext.x = STAGE_WIDTH / 2 - featuretext.width / 2;
 			title.addChild(featuretext);
 
 			addChild(title);
@@ -144,23 +143,17 @@ package com.rivermanmedia {
 			removeChild(title);
 			stage.removeEventListener(MouseEvent.CLICK, onTitleClick);
 
-			stage.addEventListener(Event.ENTER_FRAME, onGameLoop, false, 0, true);
+			game.startGame(stage);
 			stage.focus = stage;
 		}
 
-
 		private function initGame():void {
+			var hud:HUD = new HUD();
+			addChildAt(hud, 0);
+			
+			player = Player.getInstance(hud);
 			game = new GameBoard();
-			addChildAt(game, 0);
-
-			player = new Player(stage, game);
-			addChildAt(player, 0);
-		}
-
-
-		private function onGameLoop(evt:Event):void {
-			player.onGameLoop();
-			game.onGameLoop();
+			addChildAt(game, 1);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.rivermanmedia {
 	import flash.display.Sprite;
+	import flash.events.MouseEvent;
 
 	public class Task extends Sprite {
 
@@ -10,16 +11,16 @@ package com.rivermanmedia {
 		private static const OFFSET:uint = 2;
 		private static const LEFT_BLOCK:uint = OFFSET * 3 / 2;
 
-		private static const BLOCK_SIZE:uint = GameBoard.COL_WIDTH / 3 - OFFSET;
+		public static const BLOCK_SIZE:uint = 15;
 
 		private static const RUMBLE_MAX:Number = 5;
 		private static const HIGHLIGHT_DELAY:uint = 5;
-		private static const MAX_RANDOM_SIZE:uint = 12;
+		private static const MAX_RANDOM_SIZE:uint = 6;
 		private static const MAX_RANDOM_SPEED:Number = 0.5;
 
 
-		public static function getRandomSize():uint {
-			return uint(Math.floor(Math.random() * MAX_RANDOM_SIZE) + 1);
+		public static function getRandomSize(max:Number = MAX_RANDOM_SIZE):uint {
+			return uint(Math.floor(Math.random() * max) + 1);
 		}
 
 
@@ -28,7 +29,6 @@ package com.rivermanmedia {
 		}
 
 		private var isWork:Boolean;
-		private var speed:Number
 		private var blocks:Array;
 		private var size:uint;
 
@@ -40,7 +40,7 @@ package com.rivermanmedia {
 		private var dy:Number = 0;
 
 
-		public function Task(size:uint, speed:Number, isWork:Boolean = true) {
+		public function Task(w:uint, h:uint, isWork:Boolean = true) {
 			var color:uint;
 			if (isWork)
 				color = WORK_COLOR + getRandomColorOffset();
@@ -48,17 +48,10 @@ package com.rivermanmedia {
 				color = PLAY_COLOR;
 
 			this.isWork = isWork;
-			this.speed = speed;
 
 			var mywidth:uint;
-			this.size = size = size * 3;
-			if (size >= 12) {
-				mywidth = 2;
-				if (size % 6 != 0)
-					this.size = size = size + 3;
-			} else {
-				mywidth = 1;
-			}
+			this.size = w * h;
+
 			blocks = new Array(size);
 			var bx:Number = 0;
 			var by:Number = -BLOCK_SIZE;
@@ -73,11 +66,11 @@ package com.rivermanmedia {
 				}
 				//TODO make this code general enough to work with width
 				//add a variable to keep track of width
-				if (j >= (3 * mywidth)) {
+				if (j >= w) {
 					by -= BLOCK_SIZE;
 					j = 0;
 				}
-				bx = (LEFT_BLOCK * mywidth) + (BLOCK_SIZE * j);
+				bx = LEFT_BLOCK + (BLOCK_SIZE * j);
 				j++;
 				/* else if (i % 3 == 1) {
 					bx = LEFT_BLOCK; //left
@@ -90,21 +83,20 @@ package com.rivermanmedia {
 				blocks[i] = bl;
 			}
 			graphics.beginFill(BG_COLOR);
-			graphics.drawRect((LEFT_BLOCK * mywidth) / 2, -height - LEFT_BLOCK / 2, width + (LEFT_BLOCK * mywidth), height + LEFT_BLOCK);
+			graphics.drawRect(LEFT_BLOCK / 2, -height - LEFT_BLOCK / 2, width + LEFT_BLOCK, height + LEFT_BLOCK);
 			graphics.endFill();
+			
+			this.mouseChildren = false;
 		}
-
-
+	
 		private function getRandomColorOffset():Number {
 			return ((Math.random() * 0x44) - 0x22) << 16;
 		}
 
 
 		public function onGameLoop():void {
-			if (nx == -100) {
-				nx = x;
-				ny = y;
-			}
+			nx = x;
+			ny = y;
 			if (isHighlighted) {
 				//rumble:
 				if (dx < 0)
@@ -144,11 +136,11 @@ package com.rivermanmedia {
 				dy = 0;
 			}
 
-			if(y - height > 0)
+			/*if (y - height > 0)
 				ny += speed;
 			else
-				ny += speed * 8;
-			isHighlighted = false;
+				ny += speed * 8;*/
+			//isHighlighted = false;
 
 			x = nx + dx;
 			y = ny + dy;

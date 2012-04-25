@@ -1,110 +1,62 @@
 package com.rivermanmedia {
 
 	import flash.display.Sprite;
-	
-	import org.interguild.LinkedList;
+	import flash.display.Stage;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.utils.ByteArray;
+	import flash.utils.Timer;
 
 	public class GameBoard extends Sprite {
 
-		public static const NUM_COLUMNS:uint = 12;
-		public static const COL_WIDTH:uint = Main.STAGE_WIDTH / NUM_COLUMNS;
+		[Embed(source = "levels/level1.txt", mimeType = "application/octet-stream")]
+		private var Level1:Class;
 
-		public var columns:Array;
+		private var levelScript:String;
+		private var t:Timer;
+		private var s:TaskSpawner;
+		private var a:Array;
+		private var currentTask:Task = null;
 
 
 		public function GameBoard() {
-			initColumns();
+			var tmp:ByteArray = new Level1();
+			levelScript = tmp.readMultiByte(tmp.bytesAvailable, tmp.endian);
+			a = new Array();
 		}
 
 
-		private function initColumns():void {
-			columns = new Array(NUM_COLUMNS);
+		public function startGame(stage:Stage):void {
+			s = new TaskSpawner(this, "");
+			addChild(s);
 
-			graphics.lineStyle(1, 0x999999, 0.5);
-			for (var i:uint = 1; i < NUM_COLUMNS; i++) {
-				var rightX:uint = i * COL_WIDTH;
-				graphics.moveTo(rightX, 0);
-				graphics.lineTo(rightX, Main.STAGE_HEIGHT);
+			stage.addEventListener(Event.ENTER_FRAME, onGameLoop, false, 0, true);
+			stage.addEventListener(MouseEvent.CLICK, onClick, false, 0, true);
+		}
+
+
+		private function onGameLoop(evt:Event):void {
+			s.onGameLoop();
+			for each (var t:Task in a) {
+				t.onGameLoop();
 			}
+		}
 
-			for (i = 0; i < NUM_COLUMNS; i++) {
-				var list:LinkedList = new LinkedList();
-				columns[i] = list;
+
+		private function onClick(evt:MouseEvent):void {
+			if (currentTask)
+				currentTask.isHighlighted = false;
+			if (evt.target is Task){
+				currentTask = (evt.target as Task);
+				currentTask.isHighlighted = true;
 			}
 		}
 
 
-		public function onGameLoop():void {
-//			var rand:Number = Math.random();
-//			if(rand > 0.98)
-//				addNewTask();
-
-			updateAllTasks();
-		}
-
-
-		public function addNewTask():void {
-			var t:Task = new Task(Task.getRandomSize(), Task.getRandomSpeed());
-			var i:uint = getRandomColumn();
-			if (t.width > COL_WIDTH && i == NUM_COLUMNS - 1)
-				i--;
-			t.x = i * COL_WIDTH;
-			(columns[i] as LinkedList).add(t);
+		public function addTask(t:Task):void {
+			a.push(t);
+			t.addEventListener(MouseEvent.CLICK, onClick, false, 0, true);
 			addChild(t);
-		}
-
-
-		private function getRandomColumn():uint {
-			return uint(Math.floor(Math.random() * NUM_COLUMNS));
-		}
-
-
-		private function updateAllTasks():void {
-			for each (var list:LinkedList in columns) {
-				var toRemove:LinkedList = new LinkedList();
-
-				list.beginIteration();
-				while (list.hasNext()) {
-					var t:Task = (list.next as Task);
-					var test_y:Number = t.y;
-					t.onGameLoop();
-					if (!t.visible || t.y > Main.STAGE_HEIGHT) {
-						toRemove.add(t);
-						if (contains(t))
-							removeChild(t);
-					}
-				}
-
-				toRemove.beginIteration();
-				while (toRemove.hasNext()) {
-					list.remove(toRemove.next);
-				}
-			}
-		}
-
-
-		public function getTaskAt(i:uint):Task {
-			var list:LinkedList = (columns[i] as LinkedList);
-			var t:Task = null;
-			var task:Task;
-			list.beginIteration();
-			while (list.hasNext()) {
-				task = list.next as Task;
-				if (t == null || t.y < task.y)
-					t = task;
-			}
-
-			//check for bigger tasks
-			if (i > 0) {
-				list = (columns[i - 1] as LinkedList);
-				list.beginIteration();
-				while (list.hasNext()) {
-					task = list.next as Task;
-					if (task != null && (t == null || task.y > t.y) && task.width > COL_WIDTH)
-						t = task;
-				}
-			}
-			return t;
 		}
 	}
 }
